@@ -8,6 +8,8 @@ from alembic import context
 from app.db.base import Base #importar modelos aquí
 from app.models.user import User
 from app.models.survey import Survey
+from app.models.role import Role
+from app.models.stage import Stage
 
 from app.core.config import settings
 

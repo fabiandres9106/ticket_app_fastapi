@@ -7,7 +7,7 @@ from pydantic import BaseModel, EmailStr
 
 from app.models.user import User
 
-class stage(Base):
+class Stage(Base):
     __tablename__ = "stages"
 
     id = Column(Integer, primary_key=True, index=True)
