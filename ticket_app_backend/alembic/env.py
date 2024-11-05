@@ -5,7 +5,8 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from app.models.base import Base #importar modelos aquí
+from app.db.base import Base #importar modelos aquí
+from app.models.user import User
 from app.core.config import settings
 
 # this is the Alembic Config object, which provides
