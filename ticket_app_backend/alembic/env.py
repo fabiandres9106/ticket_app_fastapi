@@ -7,6 +7,8 @@ from alembic import context
 
 from app.db.base import Base #importar modelos aquí
 from app.models.user import User
+from app.models.survey import Survey
+
 from app.core.config import settings
 
 # this is the Alembic Config object, which provides
