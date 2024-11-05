@@ -16,7 +16,7 @@ class Stage(Base):
     phone = Column(String(20), nullable=True)
     social_media = Column(JSON, nullable=True)
     contact_name = Column(String(255), nullable=True)
-    capacity = Column(Integer(6), nullable=False)
+    capacity = Column(Integer(), nullable=False)
     city = Column(String(50), nullable=True)
     departament = Column(String(50))
     user_id = Column(Integer(), ForeignKey("users.id"), nullable=False)
