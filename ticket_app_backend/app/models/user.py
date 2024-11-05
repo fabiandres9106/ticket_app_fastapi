@@ -1,7 +1,11 @@
-from sqlalchemy import func, Column, Integer, String, JSON, DateTime, Boolean
+from sqlalchemy import func, ForeignKey, Column, Integer, String, JSON, DateTime, Boolean
+from sqlalchemy.orm import relationship
+
 from datetime import datetime
 from app.db.base import Base
 from pydantic import BaseModel, EmailStr
+
+from app.models.role import Role
 
 class User(Base):
     __tablename__ = "users"
@@ -9,7 +13,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(100), nullable=True)
     email = Column(String(100), unique=True, index=True, nullable=False)
-    role = Column(Integer(), nullable=False)
+    role_id = Column(Integer(), ForeignKey("roles.id"), nullable=False)
     name = Column(String(255), nullable=True)
     phone = Column(String(20), nullable=True)
     socialmedia = Column(JSON, nullable=True)
@@ -23,6 +27,10 @@ class User(Base):
     confirmed = Column(Boolean, default=True)
     suspended = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
+
+    role = relationship('Role')
+
+
 
 class UserCreate(BaseModel):
     username: str
