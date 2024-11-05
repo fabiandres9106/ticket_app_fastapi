@@ -11,6 +11,8 @@ from app.models.survey import Survey
 from app.models.role import Role
 from app.models.stage import Stage
 from app.models.event import Event
+from app.models.event_dates import EventDate
+from app.models.tickets import Ticket
 
 from app.core.config import settings
 
