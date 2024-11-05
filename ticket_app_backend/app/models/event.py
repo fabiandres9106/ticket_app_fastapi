@@ -18,6 +18,8 @@ class Event(Base):
     pulep = Column(String(10), nullable=True)
     description = Column(String(255), nullable=True)
     artistic_team = Column(JSON, nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+    active = Column(Boolean, default=True)
 
     stage = relationship('Stage')
     user = relationship('User')
