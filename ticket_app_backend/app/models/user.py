@@ -1,7 +1,6 @@
 from sqlalchemy import func, ForeignKey, Column, Integer, String, JSON, DateTime, Boolean
 from sqlalchemy.orm import relationship
 
-from datetime import datetime
 from app.db.base import Base
 from pydantic import BaseModel, EmailStr
 
@@ -29,9 +28,3 @@ class User(Base):
     created_at = Column(DateTime, server_default=func.now())
 
     role = relationship('Role')
-
-
-
-class UserCreate(BaseModel):
-    username: str
-    email: EmailStr
