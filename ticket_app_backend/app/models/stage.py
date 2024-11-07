@@ -18,7 +18,7 @@ class Stage(Base):
     contact_name = Column(String(255), nullable=True)
     capacity = Column(Integer(), nullable=False)
     city = Column(String(50), nullable=True)
-    departament = Column(String(50))
+    departament = Column(String(50), nullable=True)
     user_id = Column(Integer(), ForeignKey("users.id"), nullable=False)
     create_at = Column(DateTime, server_default=func.now())
 
