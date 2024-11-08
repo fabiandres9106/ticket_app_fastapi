@@ -3,11 +3,14 @@ from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate
 from typing import Optional, List
 
+from app.core.security import hash_password
+
 def create_user(db: Session, user: UserCreate) -> User:
     """Crea un nuevo usuario en la base de datos"""
     db_user = User(
         email = user.email,
         username = user.username,
+        hashed_password = hash_password(user.password),
         role_id = user.role_id,
         name = user.name,
         phone = user.phone,

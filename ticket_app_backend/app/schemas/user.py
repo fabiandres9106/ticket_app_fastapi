@@ -6,6 +6,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     role_id: int
     username: Optional[str] = None
+    password: str
     name: Optional[str] = None
     phone: Optional[str] = None
     socialmedia: Optional[Any] = None
@@ -55,3 +56,7 @@ class UserUpdate(BaseModel):
     policy_agreed: Optional[str]
     confirmed: Optional[str]
     suspended: Optional[str]
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
