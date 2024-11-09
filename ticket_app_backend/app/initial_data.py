@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from datetime import datetime
 
 from app.models.user import User
 from app.models.role import Role
@@ -14,11 +15,13 @@ from app.crud.user import create_user
 from app.crud.role import create_role
 from app.crud.stage import create_stage
 from app.crud.event import create_event
+from app.crud.event_dates import create_event_date
 
 from app.schemas.user import UserCreate
 from app.schemas.role import RoleCreate
 from app.schemas.stage import StageCreate
 from app.schemas.event import EventCreate
+from app.schemas.event_dates import EventDateCreate
 
 def init_db(db: Session) -> None:
     # Crear roles si no existen
@@ -90,7 +93,24 @@ def init_db(db: Session) -> None:
         ))
 
     #Crea event_dates si no existen
-    
+    event_dates_exist = db.query(EventDate).filter(EventDate.event_id == event.id).first()
+    if not event_dates_exist:
+        # Define las fechas y horas de los eventos
+        event_dates = [
+            {"date_time": datetime(2024, 11, 14, 19, 0), "available_tickets": 100},
+            {"date_time": datetime(2024, 11, 15, 19, 0), "available_tickets": 100},
+            {"date_time": datetime(2024, 11, 16, 16, 0), "available_tickets": 100},
+            {"date_time": datetime(2024, 11, 16, 19, 30), "available_tickets": 100},
+            {"date_time": datetime(2024, 11, 17, 18, 0), "available_tickets": 100},
+        ]
+        # Crea las fechas de evento en la base de datos
+        for date in event_dates:
+            create_event_date(db, EventDateCreate(
+                event_id=event.id,
+                date_time=date["date_time"],
+                available_tickets=date["available_tickets"]
+            ))
+
         
 
 if __name__ == "__main__":
