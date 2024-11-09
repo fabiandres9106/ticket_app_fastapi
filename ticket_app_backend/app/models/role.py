@@ -1,8 +1,6 @@
 from sqlalchemy import func, Column, Integer, String
-
+from sqlalchemy.orm import relationship
 from app.db.base import Base
-
-from pydantic import BaseModel
 
 class Role(Base):
     __tablename__ = "roles"
@@ -11,3 +9,6 @@ class Role(Base):
     name_role = Column(String(50), nullable=True)
     shortname = Column(String(20), nullable=False)
     description = Column(String(255), nullable=True)
+
+    # Relación inversa con User
+    users = relationship("User", secondary="user_roles", back_populates="roles")

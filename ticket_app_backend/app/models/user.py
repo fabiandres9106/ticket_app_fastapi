@@ -1,10 +1,19 @@
-from sqlalchemy import func, ForeignKey, Column, Integer, String, JSON, DateTime, Boolean
+from sqlalchemy import func, ForeignKey, Column, Integer, String, JSON, DateTime, Boolean, Table
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
-from pydantic import BaseModel, EmailStr
 
 from app.models.role import Role
+
+from datetime import datetime
+
+# Tabla de asociación entre usuarios y roles
+user_roles = Table(
+    'user_roles',
+    Base.metadata,
+    Column('user_id', Integer, ForeignKey('users.id'), primary_key=True),
+    Column('role_id', Integer, ForeignKey('roles.id'), primary_key=True)
+)
 
 class User(Base):
     __tablename__ = "users"
@@ -13,7 +22,6 @@ class User(Base):
     username = Column(String(100), nullable=True)
     email = Column(String(100), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
-    role_id = Column(Integer(), ForeignKey("roles.id"), nullable=False)
     name = Column(String(255), nullable=True)
     phone = Column(String(20), nullable=True)
     socialmedia = Column(JSON, nullable=True)
@@ -28,4 +36,5 @@ class User(Base):
     suspended = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
 
-    role = relationship('Role')
+    # Relación muchos a muchos con Role
+    roles = relationship("Role", secondary=user_roles, back_populates="users")

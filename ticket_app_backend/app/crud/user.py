@@ -3,6 +3,8 @@ from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate
 from typing import Optional, List
 
+from app.models.role import Role
+
 from app.core.security import hash_password
 
 def create_user(db: Session, user: UserCreate) -> User:
@@ -11,7 +13,6 @@ def create_user(db: Session, user: UserCreate) -> User:
         email = user.email,
         username = user.username,
         hashed_password = hash_password(user.password),
-        role_id = user.role_id,
         name = user.name,
         phone = user.phone,
         socialmedia = user.socialmedia,
@@ -24,6 +25,11 @@ def create_user(db: Session, user: UserCreate) -> User:
         confirmed = user.confirmed,
         suspended = user.suspended,
     )
+
+    # Añadir los roles al usuario
+    roles = db.query(Role).filter(Role.id.in_(user.roles)).all()
+    db_user.roles = roles
+
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

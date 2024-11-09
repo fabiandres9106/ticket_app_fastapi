@@ -36,7 +36,7 @@ def init_db(db: Session) -> None:
             email="admin@example.com",
             username="admin",
             password="admin",
-            role_id=role_admin.id,  # Asignar el ID del rol 'admin'
+            roles=[role_admin.id, role_theater.id, role_productor.id, role_spectator.id, role_logistic.id],  # Asignar múltiples roles
             name="Admin User",
             confirmed=True,
             policy_agreed=True

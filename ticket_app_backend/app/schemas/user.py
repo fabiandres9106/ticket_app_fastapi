@@ -1,10 +1,18 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional, Any
+from typing import Optional, Any, List
 from datetime import datetime
+
+class RoleRead(BaseModel):
+    id: int
+    name: str
+    shortname: str
+
+    class Config:
+        from_attributes = True
 
 class UserCreate(BaseModel):
     email: EmailStr
-    role_id: int
+    roles: List[int] 
     username: Optional[str] = None
     password: str
     name: Optional[str] = None
@@ -22,7 +30,7 @@ class UserCreate(BaseModel):
 class UserRead(BaseModel):
     id: int
     email: EmailStr
-    role_id: int
+    roles: List[RoleRead]
     username: Optional[str]
     name: Optional[str]
     phone: Optional[str]
@@ -44,7 +52,7 @@ class UserRead(BaseModel):
 class UserUpdate(BaseModel):
     username: Optional[str]
     email: Optional[EmailStr]
-    role_id: Optional[int]
+    roles: List[int] 
     name: Optional[str]
     phone: Optional[str]
     socialmedia: Optional[Any]
