@@ -1,11 +1,24 @@
 from sqlalchemy.orm import Session
+
 from app.models.user import User
 from app.models.role import Role
+from app.models.event import Event
+from app.models.event_dates import EventDate
+from app.models.stage import Stage
+from app.models.survey import Survey
+from app.models.tickets import Ticket
+
 from app.db.session import SessionLocal, engine
+
 from app.crud.user import create_user
 from app.crud.role import create_role
+from app.crud.stage import create_stage
+from app.crud.event import create_event
+
 from app.schemas.user import UserCreate
 from app.schemas.role import RoleCreate
+from app.schemas.stage import StageCreate
+from app.schemas.event import EventCreate
 
 def init_db(db: Session) -> None:
     # Crear roles si no existen
@@ -41,6 +54,44 @@ def init_db(db: Session) -> None:
             confirmed=True,
             policy_agreed=True
         ))
+
+    #Crea un escenario si no existe
+    stage = db.query(Stage).first()
+    if not stage:
+        create_stage(db, stage=StageCreate(
+            stage_name="Sala Seki Sano - Corporación Colombiana de Teatro",
+            address="Calle 12 # 2-65",
+            phone="+57 (1) 3429621",
+            capacity=100,
+            city="Bogotá",
+            departament="Bogotá D.C.",
+            user_id=admin_user.id
+        ))
+
+    #Crea un evento si no existe
+    event = db.query(Event).filter(Event.id == 1).first()
+    if not event:
+        create_event(db, event=EventCreate(
+            event_name="BWitches",
+            stage_id=stage.id,
+            user_id=admin_user.id,
+            pulep="N/A",
+            description="Version irresponsable de 'Las Brujas de Salem' de Arthur Miller",
+            artistic_team={
+                "Direccion general": "Sebastián Illera",
+                "Adaptación": "Sebastián Illera - Valentina Méndez",
+                "Iluminación": "Quimbaru",
+                "Coreografía": "Indira Duque",
+                "Diseño de vestuario": "Alejandra Castro",
+                "Asistencia de Dirección": "Valentina Méndez",
+                "Elenco": "Lina Boada, Sarita Casas, Gabriela Callejas, Katherine Gregory, Angie Hernandez, Nicoll Leal, Juana Maal, Laura Moreno, Mayelin Niño, Gabriela Otálora, Pablo Pimentel, Valeria Rodríguez, Andrés Restrepo, Esteban Sánchez, Juan Soto y Alejandro Zambrano."
+                },
+            active=True
+        ))
+
+    #Crea event_dates si no existen
+    
+        
 
 if __name__ == "__main__":
     db = SessionLocal()

@@ -8,6 +8,7 @@ def create_event(db: Session, event: EventCreate) -> Event:
     db_event = Event(
         event_name = event.event_name,
         stage_id = event.stage_id,
+        user_id = event.user_id,
         pulep = event.pulep,
         description = event.description,
         artistic_team = event.artistic_team,
