@@ -25,3 +25,6 @@ class TicketUpdate(BaseModel):
     event_date_id: Optional[int]
     ticket_number: Optional[int]
     check_in: Optional[bool]
+
+class TicketCheckInUpdate(BaseModel):
+    check_in: Optional[bool]
