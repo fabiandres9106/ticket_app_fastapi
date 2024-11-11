@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.crud.role import create_role, get_role, get_roles, update_role, delete_role
-from app.schemas.role import RoleCreate, RoleRead, RoleUpdate
+from app.schemas.role import RoleCreate, RoleRead, RoleUpdate, RoleSchema
 from app.db.session import get_db
 
 router = APIRouter()

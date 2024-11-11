@@ -19,7 +19,7 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String(100), nullable=True)
+    username = Column(String(100), unique=True, index=True, nullable=True)
     email = Column(String(100), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
     name = Column(String(255), nullable=True)
@@ -38,3 +38,5 @@ class User(Base):
 
     # Relación muchos a muchos con Role
     roles = relationship("Role", secondary=user_roles, back_populates="users")
+    # Relación con el modelo Ticket
+    tickets = relationship("Ticket", back_populates="user")

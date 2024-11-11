@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 from app.models.stage import Stage
 from app.models.user import User
+#from app.models.event_dates import EventDate
 
 class Event(Base):
     __tablename__ = "events"
@@ -23,3 +24,4 @@ class Event(Base):
 
     stage = relationship('Stage')
     user = relationship('User')
+    event_dates = relationship("EventDate", back_populates="event")

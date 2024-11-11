@@ -68,3 +68,13 @@ class UserUpdate(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+
+class EmailExistsResponse(BaseModel):
+    exists: bool
+    user_id: Optional[int] = None
+
+class UserInTicket(BaseModel):
+    id: int
+    name: Optional[str] = None
+    email: Optional[str] = None

@@ -23,6 +23,6 @@ class Survey(Base):
     information_medium = Column(String(50), nullable=True)
     other_events = Column(JSON, nullable=True)
     permision_research = Column(Boolean, default=True)
-    create_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
     user = relationship('User')

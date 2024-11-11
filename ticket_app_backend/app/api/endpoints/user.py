@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from app.models.user import User
-from app.crud.user import create_user, get_user, get_users, update_user, delete_user
-from app.schemas.user import UserCreate, UserRead, UserUpdate
+from app.crud.user import create_user, get_user, get_users, update_user, delete_user, check_email_exists
+from app.schemas.user import UserCreate, UserRead, UserUpdate, EmailExistsResponse
 
 from app.db.session import get_db
 
@@ -36,6 +36,13 @@ def read_user(user_id: int, db: Session = Depends(get_db), current_user: User = 
 @router.get("/", response_model=List[UserRead])
 def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return get_users(db=db, skip=skip, limit=limit)
+
+@router.get("/email_exists/{email}", response_model=EmailExistsResponse)
+def email_exists(email: str, db: Session = Depends(get_db)):
+    user = check_email_exists(db, email)
+    if user:
+        return {"exists": True, "user_id": user.id}
+    return {"exists": False}
 
 @router.put("/{user_id}", response_model=UserRead)
 def update_user_endpoint(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):

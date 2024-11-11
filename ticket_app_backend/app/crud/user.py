@@ -47,6 +47,10 @@ def get_users(db: Session, skip: int = 0, limit: int = 10) -> List[User]:
     """Obtiene una lista de usuarios con paginación"""
     return db.query(User).offset(skip).limit(limit).all()
 
+def check_email_exists(db: Session, email: str) -> Optional[User]:
+    """Verifica si un email ya está registrado en la base de datos."""
+    return db.query(User).filter(User.email == email).first()
+
 def update_user(db: Session, user_id: int, user_update: UserUpdate) -> Optional[User]:
     """Actualiza un usuario existente"""
     db_user = db.query(User).filter(User.id == user_id).first()

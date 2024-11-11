@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
-from app.crud.event_dates import create_event_date, get_event_date, get_event_dates, update_event_date, delete_event_date
+from app.crud.event_dates import create_event_date, get_event_date, get_event_dates, get_event_dates_by_event_id, get_event_dates_tickets, update_event_date, delete_event_date
 from app.schemas.event_dates import EventDateCreate, EventDateRead, EventDateUpdate
+from app.schemas.tickets import TicketRead
 from app.db.session import get_db
 
 router = APIRouter()
@@ -19,6 +20,13 @@ def read_event_date(event_date_id: int, db: Session = Depends(get_db)):
     if db_event_date is None:
         raise HTTPException(status_code=404, detail="EventDate not found")
     return db_event_date
+
+@router.get("/{event_date_id}/tickets", response_model=List[TicketRead])
+def read_event_date_tickets(event_date_id: int, db: Session = Depends(get_db)):
+    db_event_date_tickets = get_event_dates_tickets(db=db, event_date_id=event_date_id)
+    if db_event_date_tickets is None:
+        raise HTTPException(status_code=404, detail="EventDate not found")
+    return db_event_date_tickets
 
 @router.get("/", response_model=List[EventDateRead])
 def read_event_dates(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):

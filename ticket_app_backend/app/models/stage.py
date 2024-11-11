@@ -20,6 +20,6 @@ class Stage(Base):
     city = Column(String(50), nullable=True)
     departament = Column(String(50), nullable=True)
     user_id = Column(Integer(), ForeignKey("users.id"), nullable=False)
-    create_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
     user = relationship('User')

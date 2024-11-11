@@ -81,13 +81,13 @@ def init_db(db: Session) -> None:
             pulep="N/A",
             description="Version irresponsable de 'Las Brujas de Salem' de Arthur Miller",
             artistic_team={
-                "Direccion general": "Sebastián Illera",
-                "Adaptación": "Sebastián Illera - Valentina Méndez",
-                "Iluminación": "Quimbaru",
-                "Coreografía": "Indira Duque",
-                "Diseño de vestuario": "Alejandra Castro",
-                "Asistencia de Dirección": "Valentina Méndez",
-                "Elenco": "Lina Boada, Sarita Casas, Gabriela Callejas, Katherine Gregory, Angie Hernandez, Nicoll Leal, Juana Maal, Laura Moreno, Mayelin Niño, Gabriela Otálora, Pablo Pimentel, Valeria Rodríguez, Andrés Restrepo, Esteban Sánchez, Juan Soto y Alejandro Zambrano."
+                "direccion_general": "Sebastián Illera",
+                "adaptacion": "Sebastián Illera - Valentina Méndez",
+                "iluminacion": "Quimbaru",
+                "coreografia": "Indira Duque",
+                "diseno_vestuario": "Alejandra Castro",
+                "asistencia_direccion": "Valentina Méndez",
+                "elenco": "Lina Boada, Sarita Casas, Gabriela Callejas, Katherine Gregory, Angie Hernandez, Nicoll Leal, Juana Maal, Laura Moreno, Mayelin Niño, Gabriela Otálora, Pablo Pimentel, Valeria Rodríguez, Andrés Restrepo, Esteban Sánchez, Juan Soto y Alejandro Zambrano."
                 },
             active=True
         ))

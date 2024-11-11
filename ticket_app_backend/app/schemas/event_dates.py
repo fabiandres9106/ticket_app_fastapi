@@ -13,6 +13,9 @@ class EventDateRead(BaseModel):
     date_time: datetime
     available_tickets: int
     created_at: datetime
+    tickets_reserved: int  
+    tickets_not_reserved: int  
+    tickets_checkin: int  
 
     class Config:
         from_attributes = True

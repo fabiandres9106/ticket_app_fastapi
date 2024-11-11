@@ -19,3 +19,13 @@ class RoleUpdate(BaseModel):
     name_role: Optional[str]
     shortname: str
     description: Optional[str]
+
+
+class RoleSchema(BaseModel):
+    id: int
+    name_role: str
+    shortname: str
+
+    model_config = {
+        "from_attributes": True
+    }
