@@ -4,7 +4,7 @@ from datetime import datetime
 
 class RoleRead(BaseModel):
     id: int
-    name: str
+    name_role: str
     shortname: str
 
     class Config:

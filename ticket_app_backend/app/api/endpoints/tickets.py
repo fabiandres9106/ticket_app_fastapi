@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi import BackgroundTasks
+from app.email.email_utils import send_confirmation_email
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -6,12 +8,43 @@ from app.crud.tickets import create_ticket, get_ticket, get_tickets, update_tick
 from app.schemas.tickets import TicketCreate, TicketRead, TicketUpdate, TicketCheckInUpdate
 from app.db.session import get_db
 
+from app.models.tickets import Ticket
+
 router = APIRouter()
 
 @router.post("/", response_model=TicketRead)
-def create_ticket_endpoint(ticket: TicketCreate, db: Session = Depends(get_db)):
+def create_ticket_endpoint(ticket: TicketCreate, db: Session = Depends(get_db), background_tasks: BackgroundTasks = BackgroundTasks()):
+    # Crear el ticket en la base de datos
     db_ticket = create_ticket(db=db, ticket=ticket)
-    return db_ticket
+    
+    # Volver a consultar el ticket para cargar las relaciones con user y event_date
+    db_ticket_with_relations = db.query(Ticket).filter(Ticket.id == db_ticket.id).first()
+
+    if db_ticket_with_relations and db_ticket_with_relations.user:
+        event_datetime = db_ticket_with_relations.event_date.date_time
+        formatted_date = event_datetime.strftime("%d-%m-%Y")  # Formato de fecha
+        formatted_time = event_datetime.strftime("%I:%M %p")  # Formato de hora con AM/PM
+
+        # Preparar la información del ticket para el correo
+        ticket_info = {
+            "ticket_number": db_ticket_with_relations.ticket_number,
+            "ticket_name": db_ticket_with_relations.ticket_name,
+            "event_date": formatted_date,
+            "event_time": formatted_time,
+            "event_name": db_ticket_with_relations.event_date.event.event_name,
+            "stage_name": db_ticket_with_relations.event_date.event.stage.stage_name,
+            "stage_address": db_ticket_with_relations.event_date.event.stage.address
+        }
+        
+        # Añadir la tarea de enviar el correo electrónico en segundo plano
+        background_tasks.add_task(
+            send_confirmation_email,  # función a ejecutar
+            email_to=db_ticket_with_relations.user.email,
+            ticket_info=ticket_info,
+            attachment_path=f"flyer_witches.jpg"
+        )
+    
+    return db_ticket_with_relations
 
 @router.get("/{ticket_id}", response_model=TicketRead)
 def read_ticket(ticket_id: int, db: Session = Depends(get_db)):

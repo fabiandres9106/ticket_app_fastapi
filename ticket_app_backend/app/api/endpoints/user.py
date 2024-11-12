@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, subqueryload
 from typing import List
 
 from app.models.user import User
 from app.crud.user import create_user, get_user, get_users, update_user, delete_user, check_email_exists
 from app.schemas.user import UserCreate, UserRead, UserUpdate, EmailExistsResponse
+from app.schemas.role import RoleRead
 
 from app.db.session import get_db
 
@@ -33,9 +34,43 @@ def read_user(user_id: int, db: Session = Depends(get_db), current_user: User = 
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.schemas.user import UserRead
+from app.db.session import get_db
+from app.models.user import User
+from app.schemas.role import RoleRead
+
+router = APIRouter()
+
 @router.get("/", response_model=List[UserRead])
-def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return get_users(db=db, skip=skip, limit=limit)
+def read_users(db: Session = Depends(get_db)):
+    users = db.query(User).all()
+    # Convierte los datos a los esquemas `UserRead` y `RoleRead`
+    users_with_roles = [
+        UserRead(
+            id=user.id,
+            email=user.email,
+            roles=[RoleRead(id=role.id, name_role=role.name_role, shortname=role.shortname, description=role.description) for role in user.roles],
+            username=user.username,
+            name=user.name,
+            phone=user.phone,
+            socialmedia=user.socialmedia,
+            city=user.city,
+            localidad=user.localidad,
+            municipio_aledano=user.municipio_aledano,
+            first_access=user.first_access,
+            last_access=user.last_access,
+            picture=user.picture,
+            policy_agreed=user.policy_agreed,
+            confirmed=user.confirmed,
+            suspended=user.suspended,
+            created_at=user.created_at
+        )
+        for user in users
+    ]
+    return users_with_roles
+
 
 @router.get("/email_exists/{email}", response_model=EmailExistsResponse)
 def email_exists(email: str, db: Session = Depends(get_db)):

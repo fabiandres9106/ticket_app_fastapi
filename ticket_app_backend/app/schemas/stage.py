@@ -39,3 +39,9 @@ class StageUpdate(BaseModel):
     city: Optional[str]
     departament: Optional[str]
     user_id: Optional[int]
+
+class StageInEventDate(BaseModel):
+    id: int
+    stage_name: Optional[str] = None
+    address: Optional[str] = None
+    city: Optional[str] = None

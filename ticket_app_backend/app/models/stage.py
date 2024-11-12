@@ -23,3 +23,4 @@ class Stage(Base):
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
     user = relationship('User')
+    event = relationship('Event', back_populates="stage")

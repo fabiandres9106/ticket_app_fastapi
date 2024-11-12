@@ -4,6 +4,8 @@ from app.models.tickets import Ticket
 from app.schemas.event_dates import EventDateCreate, EventDateUpdate, EventDateRead
 from app.schemas.tickets import TicketRead
 from app.schemas.user import UserInTicket
+from app.schemas.event_dates import EventDateInTicket
+from app.schemas.stage import StageInEventDate  
 from typing import Optional, List
 
 def create_event_date(db: Session, event_date: EventDateCreate) -> EventDate:
@@ -63,24 +65,52 @@ def get_event_dates_by_event_id(db: Session, event_id: int) -> List[EventDateRea
 def get_event_dates_tickets(db: Session, event_date_id: int) -> List[TicketRead]:
     event_dates_tickets = db.query(Ticket).filter(Ticket.event_date_id == event_date_id).all()
     
-    # Construimos la respuesta incluyendo los datos del usuario
+    # Construimos la respuesta con los métodos del modelo
     event_dates_tickets_response = []
     for ticket in event_dates_tickets:
+        user = ticket.user
+        ticket_name = ticket.ticket_name
+        event_date = ticket.event_date  # Cargar la relación event_date
+        event = event_date.event  # Cargar la relación event para obtener el nombre del evento
+        stage = event.stage 
+
+        # Crear una instancia de UserInTicket a partir del usuario
+        user_data = UserInTicket(
+            id=user.id,
+            name=user.name,
+            email=user.email
+        )
+
+        # Crear una instancia de StageInEventDate para incluirla en EventDateInTicket
+        stage_data = StageInEventDate(
+            id=stage.id,
+            stage_name=stage.stage_name,
+            address=stage.address,
+            city=stage.city
+        )
+
+        # Crear una instancia de EventDateInTicket con el nombre del evento
+        event_date_data = EventDateInTicket(
+            id=event_date.id,
+            event_id=event_date.event_id,
+            date_time=event_date.date_time,
+            event_name=event.event_name,  # Incluye el nombre del evento
+            event_description = event.description,
+            event_artistic_team = event.artistic_team,
+            stage=stage_data  # Incluye la información del Stage
+        )
+
         event_dates_tickets_response.append(TicketRead(
             id=ticket.id,
+            user_id=ticket.user_id,
+            ticket_name=ticket.ticket_name,
             event_date_id=ticket.event_date_id,
             ticket_number=ticket.ticket_number,
             check_in=ticket.check_in,
             created_at=ticket.created_at,
-            user_id=ticket.user_id,
-            user=UserInTicket(
-                id=ticket.user.id,
-                name=ticket.user.name,
-                email=ticket.user.email
-            )
+            user=user_data,  # Usar la instancia UserInTicket
+            event_date=event_date_data  # Usar la instancia EventDateInTicket con el nombre del evento
         ))
-    
-    return event_dates_tickets_response
     
     return event_dates_tickets_response
 

@@ -5,7 +5,7 @@ from datetime import datetime
 from app.db.base import Base
 
 from app.models.event import Event
-from app.models.tickets import Ticket 
+#from app.models.tickets import Ticket 
 
 class EventDate(Base):
     __tablename__ = "event_dates"
@@ -22,14 +22,17 @@ class EventDate(Base):
     # Funciones para consultas de tickets
     def tickets_not_reserved(self, db: Session) -> int:
         """Retorna la cantidad de tickets no reservados."""
+        from app.models.tickets import Ticket
         reserved_tickets = db.query(Ticket).filter(Ticket.event_date_id == self.id).count()
         return self.available_tickets - reserved_tickets
 
     def tickets_reserved(self, db: Session) -> int:
         """Retorna la cantidad de tickets reservados."""
+        from app.models.tickets import Ticket
         return db.query(Ticket).filter(Ticket.event_date_id == self.id).count()
 
     def tickets_checkin(self, db: Session) -> int:
         """Retorna la cantidad de tickets que han hecho check-in."""
+        from app.models.tickets import Ticket
         checkin_tickets = db.query(Ticket).filter(Ticket.event_date_id == self.id, Ticket.check_in == True).count()
         return checkin_tickets

@@ -22,6 +22,6 @@ class Event(Base):
     created_at = Column(DateTime, server_default=func.now())
     active = Column(Boolean, default=True)
 
-    stage = relationship('Stage')
+    stage = relationship('Stage', back_populates="event")
     user = relationship('User')
     event_dates = relationship("EventDate", back_populates="event")

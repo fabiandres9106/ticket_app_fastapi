@@ -8,6 +8,7 @@ def create_ticket(db: Session, ticket: TicketCreate) -> Ticket:
     db_ticket = Ticket(
         user_id = ticket.user_id,
         event_date_id = ticket.event_date_id,
+        ticket_name = ticket.ticket_name,
         check_in = ticket.check_in,
     )
 
@@ -27,6 +28,7 @@ def get_ticket(db: Session, ticket_id: int):
         user = ticket.user  # Aquí accedes al usuario relacionado
         return {
             "ticket_id": ticket.id,
+            "ticket_name": ticket.ticket_name,
             "ticket_number": ticket.ticket_number,
             "user_id": user.id,
             "user_email": user.email,
