@@ -4,9 +4,12 @@ from app.api.router import api_router
 from fastapi.staticfiles import StaticFiles
 from app.scheduler.scheduler import schedule_emails_for_events
 import asyncio
+from app.core.config import settings
 
 
 app = FastAPI()
+
+app = FastAPI(debug=settings.debug)
 
 @app.on_event("startup")
 async def startup_event():
