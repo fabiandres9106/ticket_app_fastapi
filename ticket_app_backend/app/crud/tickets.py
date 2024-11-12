@@ -43,6 +43,10 @@ def get_tickets(db: Session, skip: int = 0, limit: int = 10) -> List[Ticket]:
     """Obtiene una lista de Ticket con paginación"""
     return db.query(Ticket).offset(skip).limit(limit).all()
 
+def get_tickets_by_event_data(db: Session, event_date_id: int) -> List[Ticket]:
+    """Obtiene una lista de Ticket con paginación"""
+    return db.query(Ticket).filter(Ticket.event_date_id == event_date_id).all()
+
 def update_ticket(db: Session, ticket_id: int, ticket_update: TicketUpdate) -> Optional[Ticket]:
     """Actualiza un Ticket existente"""
     db_ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()

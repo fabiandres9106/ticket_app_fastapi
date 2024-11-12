@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     MAIL_STARTTLS: bool = False  # Cambiado de MAIL_TLS a MAIL_STARTTLS
     MAIL_SSL_TLS: bool = True    # Cambiado de MAIL_SSL a MAIL_SSL_TLS
 
+    debug: bool = False
+
+
     class Config:
         env_file = ".env"
 

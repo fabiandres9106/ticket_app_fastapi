@@ -2,8 +2,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.router import api_router
 from fastapi.staticfiles import StaticFiles
+from app.scheduler.scheduler import schedule_emails_for_events
+import asyncio
+
 
 app = FastAPI()
+
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(schedule_emails_for_events())
 
 # Configuración de CORS
 origins = [

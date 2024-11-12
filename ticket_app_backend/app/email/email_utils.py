@@ -42,7 +42,7 @@ async def send_confirmation_email(email_to: str, ticket_info: dict, attachment_p
     <br>
     <p>Sistema de Caracterización de Públicos para las Artes Escénicas</p>
     <p>Proyecto de Investigación "Análisis de la escenificación como fuente de análisis crítico y la evaluación formativa"</p>
-    <p>Grupo de Investigación Dramaturgias del cuerpo y Escrituras del Espacio / Grupo de Investigación Aulide.</p>
+    <p>Grupo de Investigación Dramaturgias del cuerpo y Escrituras del Espacio / Grupo de Investigación Áulide.</p>
     <p>Factultad de Artes ASAB - UDFJC </p>
     """
 
@@ -61,6 +61,39 @@ async def send_confirmation_email(email_to: str, ticket_info: dict, attachment_p
         subtype="html",
         bcc=["info@estudiocajanegra.net"],
         attachments=[attachment_path] if attachment_path else None 
+    )
+
+    fm = FastMail(conf)
+    try:
+        await fm.send_message(message)
+        logging.info(f"Correo de confirmación enviado a {email_to}")
+    except Exception as e:
+        logging.error(f"Error al enviar correo a {email_to}: {e}")
+
+
+async def send_survey_email(email_to: str, ticket_info: dict):
+    body_content = f"""
+    <h2>Encuesta de Percepción del Espectador - {ticket_info.get('event_name')} - Temporada de Estrenos ASAB</h2>
+    <p>¡Hola!, gracias por participar en la función de <b>{ticket_info.get('event_name')}</b>.</p>
+    <p>En el siguiente link encontrarás una encuesta enfocada a concer tu percepción sobre el espectáculo. La encuesta es completamente anónima, te aseguramos que tus respuestas serán almacenadas de forma confidencial y utilizadas únicamente con fines académicos e investigativos:</p>
+    <p><a href="https://cornflowerblue-hyena-638150.hostingersite.com/bwitches-encuesta/">PARA DILIGENCIAR LA ENCUESTA, HAZ CLIC AQUÍ</a><br><br></p>
+    <p>Esta encuesta hace parte del proyecto de investigación Análisis de la escenificación en el área de Públicos del <b>Grupo de Investigación Dramaturgias del Cuerpo y Escrituras del Espacio</b> y el <b>Grupo de Investigación Áulide</b>. Estamos interesados en conocer la percepción de los asistentes a las funciones teatrales en la Temporada de Estrenos de la Facultad de Artes ASAB.</p>
+    <p><strong>¡Gracias por ayudarnos a construir el conocimiento sobre los espectadores teatrales de la Temporada de Estrenos ASAB!</strong></p></p>
+    <br>
+    <p>----------------------</p>
+    <br>
+    <p>Sistema de Caracterización de Públicos para las Artes Escénicas</p>
+    <p>Proyecto de Investigación "Análisis de la escenificación como fuente de análisis crítico y la evaluación formativa"</p>
+    <p>Grupo de Investigación Dramaturgias del cuerpo y Escrituras del Espacio / Grupo de Investigación Áulide.</p>
+    <p>Factultad de Artes ASAB - UDFJC </p>
+    """
+
+    message = MessageSchema(
+        subject=f"Encuesta de Percepción del Espectador - {ticket_info.get('event_name')}",
+        recipients=[email_to],
+        body=body_content,
+        subtype="html",
+        bcc=["info@estudiocajanegra.net"],
     )
 
     fm = FastMail(conf)
