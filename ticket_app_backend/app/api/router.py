@@ -3,7 +3,7 @@ from app.api.endpoints import user, role, stage, event, event_dates, survey, tic
 
 
 api_router = APIRouter()
-api_router.include_router(user.router, prefix="/users", tags=["users"])
+api_router.include_router(user.router, prefix="/users/", tags=["users"])
 api_router.include_router(role.router, prefix="/roles", tags=["roles"])
 api_router.include_router(stage.router, prefix="/stage", tags=["stages"])
 api_router.include_router(event.router, prefix="/event", tags=["events"])
