@@ -6,6 +6,9 @@ from app.scheduler.scheduler import schedule_emails_for_events
 import asyncio
 from app.core.config import settings
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
 
 app = FastAPI()
 

@@ -13,8 +13,8 @@ class Settings(BaseSettings):
     MAIL_FROM: EmailStr
     MAIL_PORT: int
     MAIL_SERVER: str
-    MAIL_STARTTLS: bool = False  # Cambiado de MAIL_TLS a MAIL_STARTTLS
-    MAIL_SSL_TLS: bool = True    # Cambiado de MAIL_SSL a MAIL_SSL_TLS
+    MAIL_STARTTLS: bool = False
+    MAIL_SSL_TLS: bool = True
 
     debug: bool = False
 
