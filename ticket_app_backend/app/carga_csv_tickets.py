@@ -90,6 +90,6 @@ def load_data_from_csv(file_path: str):
 # Ruta del archivo CSV
 current_directory = os.path.dirname(os.path.abspath(__file__))  # app/email
 static_directory = os.path.abspath(os.path.join(current_directory, "./static"))
-file_path = os.path.join(static_directory, "bwitches_database.csv")
+file_path = os.path.join(static_directory, "bwitches_database3.csv")
 print(file_path)
 load_data_from_csv(file_path)
