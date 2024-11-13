@@ -76,8 +76,8 @@ def init_db(db: Session) -> None:
     if not event:
         create_event(db, event=EventCreate(
             event_name="BWitches",
-            stage_id=stage.id,
-            user_id=admin_user.id,
+            stage_id=1,
+            user_id=1,
             pulep="N/A",
             description="Version irresponsable de 'Las Brujas de Salem' de Arthur Miller",
             artistic_team={
@@ -93,7 +93,7 @@ def init_db(db: Session) -> None:
         ))
 
     #Crea event_dates si no existen
-    event_dates_exist = db.query(EventDate).filter(EventDate.event_id == event.id).first()
+    event_dates_exist = db.query(EventDate).filter(EventDate.event_id == 1).first()
     if not event_dates_exist:
         # Define las fechas y horas de los eventos
         event_dates = [
@@ -106,7 +106,7 @@ def init_db(db: Session) -> None:
         # Crea las fechas de evento en la base de datos
         for date in event_dates:
             create_event_date(db, EventDateCreate(
-                event_id=event.id,
+                event_id=1,
                 date_time=date["date_time"],
                 available_tickets=date["available_tickets"]
             ))
