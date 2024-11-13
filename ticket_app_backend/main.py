@@ -21,7 +21,7 @@ origins = [
     "http://127.0.0.1:8080",  # Alternativa para localhost
     "https://estudiocajanegra.net",
     "https://www.estudiocajanegra.net",
-    "https://estudiocajanegra.net:8443"
+    "https://api.estudiocajanegra.net:8443"
     # Agrega otros orígenes según sea necesario, como tu dominio en producción
 ]
 
