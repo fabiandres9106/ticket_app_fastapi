@@ -19,8 +19,8 @@ async def startup_event():
 origins = [
     # "http://localhost:3000",  # Origen del frontend de React en desarrollo
     "http://127.0.0.1:8080",  # Alternativa para localhost
-    "https://estudiocajanegra.net/",
-    "https://www.estudiocajanegra.net/",
+    "https://estudiocajanegra.net",
+    "https://www.estudiocajanegra.net",
     "https://estudiocajanegra.net:8443"
     # Agrega otros orígenes según sea necesario, como tu dominio en producción
 ]
