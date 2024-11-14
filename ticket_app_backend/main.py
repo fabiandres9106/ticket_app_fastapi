@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 app = FastAPI()
 
-app = FastAPI(debug=settings.debug)
+# app = FastAPI(debug=settings.debug)
 
 @app.on_event("startup")
 async def startup_event():
@@ -20,7 +20,7 @@ async def startup_event():
 
 # Configuración de CORS
 origins = [
-    # "http://localhost:3000",  # Origen del frontend de React en desarrollo
+    "http://localhost:3000",  # Origen del frontend de React en desarrollo
     "http://127.0.0.1:8080",  # Alternativa para localhost
     "https://estudiocajanegra.net",
     "https://www.estudiocajanegra.net",
