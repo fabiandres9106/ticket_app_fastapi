@@ -14,7 +14,7 @@ from app.core.dependencies import get_current_user
 
 router = APIRouter()
 
-@router.post("/", response_model=UserRead)
+@router.post("/create/", response_model=UserRead)
 def create_user_endpoint(user: UserCreate, db: Session = Depends(get_db)):
     db_user = create_user(db=db, user=user)
     return db_user
