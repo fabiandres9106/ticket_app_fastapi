@@ -74,18 +74,22 @@ async def send_confirmation_email(email_to: str, ticket_info: dict, attachment_p
 async def send_survey_email(email_to: str, ticket_info: dict):
     body_content = f"""
     <h2>¿Qué opinas de {ticket_info.get('event_name')}? - Temporada de Estrenos ASAB</h2>
-    <p>¡Hola!, gracias por participar en la función de <b>{ticket_info.get('event_name')}</b>.</p>
-    <p>En el siguiente link encontrarás una encuesta para que nos brindes tu percepción sobre el espectáculo. La encuesta es completamente anónima, te aseguramos que tus respuestas serán almacenadas de forma confidencial y utilizadas únicamente con fines académicos e investigativos:</p>
-    <p><a href="https://cornflowerblue-hyena-638150.hostingersite.com/bwitches-encuesta/">PARA DILIGENCIAR LA ENCUESTA, HAZ CLIC AQUÍ</a><br><br></p>
-    <p>Esta encuesta hace parte del proyecto de investigación Análisis de la escenificación en el área de Públicos del <b>Grupo de Investigación Dramaturgias del Cuerpo y Escrituras del Espacio</b> y el <b>Grupo de Investigación Áulide</b>. Estamos interesados en conocer la percepción de los asistentes a las funciones teatrales en la Temporada de Estrenos de la Facultad de Artes ASAB.</p>
-    <p><strong>¡Gracias por ayudarnos a construir el conocimiento sobre los espectadores teatrales de la Temporada de Estrenos ASAB!</strong></p></p>
+    <p>¡Hola!</p>
+    <p>Muchas gracias por acompañarnos en la función de <b>{ticket_info.get('event_name')}</b>. Nos encantaría conocer tu percepción sobre el espectáculo, y para ello, hemos preparado una breve encuesta.</p>
+    <p>Tu participación es <strong>completamente anónima</strong>, y tus respuestas serán manejadas de manera <strong>confidencial</strong>, utilizándose únicamente con fines académicos y de investigación.</p>
+    <p><a href="https://cornflowerblue-hyena-638150.hostingersite.com/bwitches-encuesta/">👉 HAZ CLIC AQUÍ PARA DILIGENCIAR LA ENCUESTA 👈</a><br><br></p>
+    <p>Esta encuesta forma parte del proyecto de investigación <strong>"Análisis de la escenificación"</strong> en el área de <strong>Públicos</strong>, desarrollado por el <strong>Grupo de Investigación Dramaturgias del Cuerpo y Escrituras del Espacio</strong> y el <strong>Grupo de Investigación Áulide</strong>, en la Facultad de Artes ASAB.<b>Grupo de Investigación Dramaturgias del Cuerpo y Escrituras del Espacio</b> y el <b>Grupo de Investigación Áulide</b>.</p>
+    <p>Nuestro objetivo es entender mejor la percepción de los asistentes a las funciones teatrales de la <strong>Temporada de Estrenos</strong> y construir conocimiento sobre la relación entre las artes escénicas y su público.</p>
+    <p><strong>¡Gracias por ayudarnos a dar vida al teatro desde una perspectiva académica y crítica!</strong></p></p>
     <br>
     <p>----------------------</p>
     <br>
-    <p>Sistema de Caracterización de Públicos para las Artes Escénicas</p>
-    <p>Proyecto de Investigación "Análisis de la escenificación como fuente de análisis crítico y la evaluación formativa"</p>
-    <p>Grupo de Investigación Dramaturgias del cuerpo y Escrituras del Espacio / Grupo de Investigación Áulide.</p>
-    <p>Factultad de Artes ASAB - UDFJC </p>
+    <p style="font-size: 14px; color: #555;">
+            <strong>Sistema de Caracterización de Públicos para las Artes Escénicas</strong><br>
+            Proyecto de Investigación: <em>"Análisis de la escenificación como fuente de análisis crítico y evaluación formativa"</em><br>
+            Grupos de Investigación: Dramaturgias del Cuerpo y Escrituras del Espacio / Áulide<br>
+            <strong>Facultad de Artes ASAB – UDFJC</strong>
+        </p>
     """
 
     message = MessageSchema(
