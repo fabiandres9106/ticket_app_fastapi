@@ -103,6 +103,6 @@ async def send_survey_email(email_to: str, ticket_info: dict):
     fm = FastMail(conf)
     try:
         await fm.send_message(message)
-        logging.info(f"Correo de confirmación enviado a {email_to}")
+        logging.info(f"Correo Survey enviado a {email_to}")
     except Exception as e:
-        logging.error(f"Error al enviar correo a {email_to}: {e}")
+        logging.error(f"Error al enviar correo Survey a {email_to}: {e}")
