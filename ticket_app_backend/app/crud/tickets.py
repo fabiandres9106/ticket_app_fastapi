@@ -39,9 +39,9 @@ def get_ticket(db: Session, ticket_id: int):
         }
     return None
 
-def get_tickets(db: Session, skip: int = 0, limit: int = 10) -> List[Ticket]:
+def get_tickets(db: Session) -> List[Ticket]:
     """Obtiene una lista de Ticket con paginación"""
-    return db.query(Ticket).offset(skip).limit(limit).all()
+    return db.query(Ticket).all()
 
 def get_tickets_by_event_data(db: Session, event_date_id: int) -> List[Ticket]:
     """Obtiene una lista de Ticket con paginación"""

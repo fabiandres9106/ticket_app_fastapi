@@ -54,8 +54,8 @@ def read_ticket(ticket_id: int, db: Session = Depends(get_db)):
     return db_ticket
 
 @router.get("/", response_model=List[TicketRead])
-def read_tickets(skip: int = 0, limit: int = 500, db: Session = Depends(get_db)):
-    return get_tickets(db=db, skip=skip, limit=limit)
+def read_tickets(db: Session = Depends(get_db)):
+    return get_tickets(db=db)
 
 @router.put("/{ticket_id}", response_model=TicketRead)
 def update_ticket_endpoint(ticket_id: int, ticket: TicketUpdate, db: Session = Depends(get_db)):
