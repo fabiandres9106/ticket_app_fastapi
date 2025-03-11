@@ -6,6 +6,7 @@ from app.models.user import User
 from app.crud.user import create_user, get_user, get_users, update_user, delete_user, check_email_exists
 from app.schemas.user import UserCreate, UserRead, UserUpdate, EmailExistsResponse
 from app.schemas.role import RoleRead
+from app.schemas.survey import SurveyRead
 
 from app.db.session import get_db
 
@@ -29,7 +30,7 @@ def read_user(user_id: int, db: Session = Depends(get_db), current_user: User = 
     except ValueError:
         raise HTTPException(status_code=400, detail="ID de usuario inválido")
     
-    user = db.query(User).filter(User.id == user_id). first
+    user = db.query(User).filter(User.id == user_id).first()
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
@@ -56,7 +57,8 @@ def read_users(db: Session = Depends(get_db)):
             policy_agreed=user.policy_agreed,
             confirmed=user.confirmed,
             suspended=user.suspended,
-            created_at=user.created_at
+            created_at=user.created_at,
+            tickets = user.tickets
         )
         for user in users
     ]

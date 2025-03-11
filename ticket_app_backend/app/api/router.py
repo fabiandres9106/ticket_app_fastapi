@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.endpoints import user, role, stage, event, event_dates, survey, tickets, auth
+from app.api.endpoints import user, role, stage, event, event_dates, survey, tickets, auth, download_bd
 
 
 api_router = APIRouter()
@@ -10,4 +10,5 @@ api_router.include_router(event.router, prefix="/event", tags=["events"])
 api_router.include_router(event_dates.router, prefix="/event_date", tags=["event_dates"])
 api_router.include_router(survey.router, prefix="/survey", tags=["surveys"])
 api_router.include_router(tickets.router, prefix="/ticket", tags=["tickets"])
+api_router.include_router(download_bd.router, prefix="/download_bd", tags=["tickets"])
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])

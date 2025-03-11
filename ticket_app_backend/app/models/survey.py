@@ -25,4 +25,4 @@ class Survey(Base):
     permision_research = Column(Boolean, default=True)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
-    user = relationship('User')
+    user = relationship('User', back_populates="surveys")

@@ -1,90 +1,118 @@
 import csv
-from sqlalchemy.orm import Session
-from app.db.session import get_db
-from app.crud.user import get_user_by_email  # Asume que existe la función get_user_by_email
-from app.models.tickets import Ticket
-from app.email.email_utils import send_confirmation_email
 import asyncio
 import os
+from datetime import datetime
 
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi import BackgroundTasks
+from typing import List
+from fastapi.responses import FileResponse
+
+from sqlalchemy.orm import Session
+from app.db.session import get_db
+
+from app.models.tickets import Ticket
+from app.models.survey import Survey
+from app.models.user import User
+from app.models.event_dates import EventDate
+
+from app.schemas.tickets import TicketRead
+from app.schemas.event_dates import EventDateRead
+from app.schemas.user import UserRead, UserInTicket
+from app.schemas.survey import SurveyRead
+
+from app.crud.tickets import get_tickets
+from app.crud.user import get_users  # Asume que existe la función get_user_by_email
+from app.crud.survey import get_surveys
+
+router = APIRouter()
+
+@router.get("/")
 # Cargar los datos del archivo CSV
-def load_data_from_csv(file_path: str):
-    db: Session = next(get_db())  # Crear una sesión de base de datos
+def create_csv(db: Session = Depends(get_db)):
+    tickets = get_tickets(db=db)
+    users = get_users(db=db)
+    survey = get_surveys(db=db)
 
-    with open(file_path, mode='r', encoding='utf-8') as file:
-        reader = csv.DictReader(file)
+    tickets_with_data = [
+        TicketRead(
+            id=ticket.id,
+            user_id=ticket.user_id,
+            
+            user=[UserInTicket(
+                id=user_in_ticket.id, 
+                name=user_in_ticket.name, 
+                email=user_in_ticket.email,
+                city=user_in_ticket.city,
+                localidad=user_in_ticket.localidad,
+                municipio_aledano=user_in_ticket.municipio_aledano,
+                ) 
+                for user_in_ticket in ticket.user],
+            event_date_id=ticket.event_date_id,
+            ticket_number=ticket.ticket_number,
+            ticket_name=ticket.ticket_name,
+            event_date=ticket.event_date,
+            check_in=ticket.check_in,
+            created_at=ticket.created_at
+        )
+        for ticket in tickets
+    ]
+    return tickets_with_data
 
-        for row in reader:
-            # Verificar si el usuario ya existe por su email
-            existing_user = get_user_by_email(db, email=row['email'])
-            if existing_user:
-                user = existing_user
-            else:
-                # Crear usuario si no existe
-                user_data = UserCreate(
-                    email=row['email'],
-                    username=row.get('username'),
-                    password=row['email'],  # Cambiar por lógica de generación de contraseña
-                    name=row.get('name'),
-                    phone=row.get('phone'),
-                    city=row.get('city'),
-                    localidad=row.get('localidad'),
-                    municipio_aledano=row.get('municipio_aledano'),
-                    policy_agreed=bool(row.get('policy_agreed', True)),
-                    confirmed=bool(row.get('confirmed', True)),
-                    suspended=bool(row.get('suspended', False)),
-                    roles=[4]  # Rol fijo
-                )
-                user = create_user(db, user=user_data)
+@router.get("/download_csv", response_class=FileResponse)
+def download_csv(db: Session = Depends(get_db)):
+    tickets = db.query(Ticket).all()
+    users = db.query(User).all()
+    surveys = db.query(Survey).all()
+    event_dates = db.query(EventDate).all()
 
-            # Crear ticket
-            ticket_data = TicketCreate(
-                user_id=user.id,
-                event_date_id=int(row['event_date_id']),
-                ticket_name=row.get('ticket_name', f"{row.get('name')}"),
-                check_in=bool(row.get('check_in', False))
-            )
-            ticket = create_ticket(db, ticket=ticket_data)
-            ticket_db = db.query(Ticket).filter(Ticket.id == ticket.id).first()
+    # Ruta del archivo CSV
+    current_directory = os.path.dirname(os.path.abspath(__file__))  # app/email
+    static_directory = os.path.abspath(os.path.join(current_directory, "../../static"))
+    
+    # Crear el directorio si no existe
+    if not os.path.exists(static_directory):
+        os.makedirs(static_directory)
+    
+    # Generar el nombre del archivo con la fecha y hora actual
+    current_datetime = datetime.now().strftime("%Y%m%d_%H%M%S")
+    file_name = f"{current_datetime}_tickets_data.csv"
+    file_path = os.path.join(static_directory, file_name)
 
-            event_datetime = ticket_db.event_date.date_time
-            formatted_date = event_datetime.strftime("%d-%m-%Y")  # Formato de fecha
-            formatted_time = event_datetime.strftime("%I:%M %p")  # Formato de hora con AM/PM
+    # Crear el archivo CSV
+    with open(file_path, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([
+            "Ticket Number", "Ticket Name", "User ID", "User Name", "User Email", 
+            "User City", "User Localidad", "User Municipio Aledano", "Survey Age", 
+            "Survey Genere", "Survey Education", "Survey Occupation", 
+            "Survey Relationship Theatre", "Survey Motivations", 
+            "Survey Others Motivations", "Survey Information Medium", 
+            "Survey Other Events", "Survey Permission Research", "Check-In",
+            "Event Date"
+        ])
 
-            # Información del ticket para el correo
-            ticket_info = {
-                "ticket_name": ticket.ticket_name,
-                "event_name": f"{ticket_db.event_date.event.event_name}",
-                "event_date": f"{formatted_date}",
-                "event_time": f"{formatted_time}",
-                "stage_name": ticket_db.event_date.event.stage.stage_name,
-                "stage_address": ticket_db.event_date.event.stage.address
-            }
+        for ticket in tickets:
+            user = next((u for u in users if u.id == ticket.user_id), None)
+            survey = next((s for s in surveys if s.user_id == ticket.user_id), None)
+            event_date = next((e for e in event_dates if e.id == ticket.event_date_id), None)
+            writer.writerow([
+                ticket.ticket_number, ticket.ticket_name, ticket.user_id, 
+                user.name if user else None, user.email if user else None, 
+                user.city if user else None, user.localidad if user else None, 
+                user.municipio_aledano if user else None, survey.age if survey else None, 
+                survey.genere if survey else None, survey.education if survey else None, 
+                survey.occupation if survey else None, survey.relationship_theatre if survey else None, 
+                survey.motivations if survey else None, survey.others_motivations if survey else None, 
+                survey.information_medium if survey else None, survey.other_events if survey else None, 
+                survey.permision_research if survey else None, ticket.check_in,
+                event_date.date_time.strftime("%Y-%m-%d %H:%M:%S") if event_date else None
+            ])
 
-            # Enviar correo de confirmación
-            asyncio.run(send_confirmation_email(user.email, ticket_info))
-
-            # Crear encuesta
-            survey_data = SurveyCreate(
-                user_id=user.id,
-                age=row.get('age'),
-                genere=row.get('genere'),
-                education=row.get('education'),
-                occupation=row.get('occupation'),
-                relationship_theatre=row.get('relationship_theatre'),
-                motivations=row.get('motivations'),
-                others_motivations=row.get('others_motivations'),
-                information_medium=row.get('information_medium'),
-                other_events=row.get('other_events'),
-                permision_research=bool(row.get('permision_research', True))
-            )
-            create_survey(db, survey=survey_data)
-
-        print("Datos cargados exitosamente desde el archivo CSV.")
+    return file_path
 
 # Ruta del archivo CSV
 current_directory = os.path.dirname(os.path.abspath(__file__))  # app/email
-static_directory = os.path.abspath(os.path.join(current_directory, "./static"))
+static_directory = os.path.abspath(os.path.join(current_directory, "../../static"))
 file_path = os.path.join(static_directory, "bwitches_database6_converted.csv")
 print(file_path)
-load_data_from_csv(file_path)

@@ -40,3 +40,5 @@ class User(Base):
     roles = relationship("Role", secondary=user_roles, back_populates="users")
     # Relación con el modelo Ticket
     tickets = relationship("Ticket", back_populates="user")
+    # Relación con el modelo Survey
+    surveys = relationship("Survey", back_populates="user")

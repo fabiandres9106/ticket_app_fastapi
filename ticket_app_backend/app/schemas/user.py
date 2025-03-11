@@ -78,3 +78,6 @@ class UserInTicket(BaseModel):
     id: int
     name: Optional[str] = None
     email: Optional[str] = None
+    city: Optional[str] = None
+    localidad: Optional[str] = None
+    municipio_aledano: Optional[str] = None

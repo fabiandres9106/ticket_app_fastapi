@@ -40,7 +40,7 @@ def get_ticket(db: Session, ticket_id: int):
     return None
 
 def get_tickets(db: Session) -> List[Ticket]:
-    """Obtiene una lista de Ticket con paginación"""
+    """Obtiene una lista de Ticket"""
     return db.query(Ticket).all()
 
 def get_tickets_by_event_data(db: Session, event_date_id: int) -> List[Ticket]:
