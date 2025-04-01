@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response, Request
 from sqlalchemy.orm import Session, subqueryload
 from typing import List
 
@@ -36,8 +36,17 @@ def read_user(user_id: int, db: Session = Depends(get_db), current_user: User = 
     return user
 
 @router.get("/", response_model=List[UserRead])
-def read_users(db: Session = Depends(get_db)):
-    users = db.query(User).all()
+def read_users(
+    response: Response,
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 10,
+):
+    query = db.query(User)
+    total = query.count()
+
+    users = query.offset(skip).limit(limit).all()
+
     # Convierte los datos a los esquemas `UserRead` y `RoleRead`
     users_with_roles = [
         UserRead(
@@ -62,6 +71,11 @@ def read_users(db: Session = Depends(get_db)):
         )
         for user in users
     ]
+
+    # Cabecera Content-Range que espera React Admin
+    response.headers["Content-Range"] = f"users {skip}-{skip + len(users) - 1}/{total}"
+    response.headers["Access-Control-Expose-Headers"] = "Content-Range"
+
     return users_with_roles
 
 
