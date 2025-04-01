@@ -37,15 +37,20 @@ def read_user(user_id: int, db: Session = Depends(get_db), current_user: User = 
 
 @router.get("/", response_model=List[UserRead])
 def read_users(
+    request: Request,
     response: Response,
     db: Session = Depends(get_db),
-    skip: int = 0,
-    limit: int = 10,
 ):
+    
+     # Extraer los parámetros _start y _end desde la query
+    start = int(request.query_params.get("_start", 0))
+    end = int(request.query_params.get("_end", start + 10))  # por defecto, 10 resultados
+    limit = end - start
+    
     query = db.query(User)
     total = query.count()
 
-    users = query.offset(skip).limit(limit).all()
+    users = query.offset(start).limit(limit).all()
 
     # Convierte los datos a los esquemas `UserRead` y `RoleRead`
     users_with_roles = [
@@ -73,7 +78,7 @@ def read_users(
     ]
 
     # Cabecera Content-Range que espera React Admin
-    response.headers["Content-Range"] = f"users {skip}-{skip + len(users) - 1}/{total}"
+    response.headers["Content-Range"] = f"users {start}-{start + len(users) - 1}/{total}"
     response.headers["Access-Control-Expose-Headers"] = "Content-Range"
 
     return users_with_roles
