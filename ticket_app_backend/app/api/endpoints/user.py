@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, Request
 from sqlalchemy.orm import Session, subqueryload
+from sqlalchemy import asc, desc
 from typing import List
 
 from app.models.user import User
@@ -11,6 +12,8 @@ from app.schemas.survey import SurveyRead
 from app.db.session import get_db
 
 from app.core.dependencies import get_current_user
+
+import json
 
 
 router = APIRouter()
@@ -42,18 +45,43 @@ def read_users(
     response: Response,
     db: Session = Depends(get_db),
 ):
-    
-     # Extraer los parámetros _start y _end desde la query
-    start = int(request.query_params.get("_start", 0))
-    end = int(request.query_params.get("_end", start + 10))  # por defecto, 10 resultados
-    limit = end - start
-    
+    # Leer parámetros de consulta
+    range_param = request.query_params.get("range", "[0,9]")
+    sort_param = request.query_params.get("sort", '["id", "ASC"]')
+    filter_param = request.query_params.get("filter", "{}")
+
+    try:
+        range_ = json.loads(range_param)
+        sort = json.loads(sort_param)
+        filters = json.loads(filter_param)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error parsing query parameters: {str(e)}")
+
+    start, end = range_
+    sort_field, sort_order = sort
+
+    # Construir la query base
     query = db.query(User)
+
+    # Aplicar filtros simples (ej: ?filter={"name":"Ana"})
+    for attr, value in filters.items():
+        if hasattr(User, attr):
+            query = query.filter(getattr(User, attr).ilike(f"%{value}%"))
+
     total = query.count()
 
-    users = query.offset(start).limit(limit).all()
+    # Ordenar
+    sort_column = getattr(User, sort_field, None)
+    if sort_column is not None:
+        if sort_order == "ASC":
+            query = query.order_by(asc(sort_column))
+        else:
+            query = query.order_by(desc(sort_column))
 
-    # Convierte los datos a los esquemas `UserRead` y `RoleRead`
+    # Paginación
+    users = query.offset(start).limit(end - start + 1).all()
+
+    # Construir lista
     users_with_roles = [
         UserRead(
             id=user.id,
@@ -73,13 +101,13 @@ def read_users(
             confirmed=user.confirmed,
             suspended=user.suspended,
             created_at=user.created_at,
-            tickets = user.tickets
+            tickets=user.tickets
         )
         for user in users
     ]
 
-    # Cabecera Content-Range que espera React Admin
-    response.headers["Content-Range"] = f"users {start}-{start + len(users) - 1}/{total}"
+    # Cabecera Content-Range con "items" como espera React Admin
+    response.headers["Content-Range"] = f"items {start}-{start + len(users) - 1}/{total}"
     response.headers["Access-Control-Expose-Headers"] = "Content-Range"
 
     return users_with_roles
