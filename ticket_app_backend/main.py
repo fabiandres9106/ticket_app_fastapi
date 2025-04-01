@@ -1,10 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.router import api_router
 from fastapi.staticfiles import StaticFiles
 from app.scheduler.scheduler import schedule_emails_for_events
 import asyncio
 from app.core.config import settings
+from starlette.middleware.base import BaseHTTPMiddleware
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -17,6 +18,14 @@ app = FastAPI()
 @app.on_event("startup")
 async def startup_event():
     asyncio.create_task(schedule_emails_for_events())
+
+class ExposeHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        response.headers["Access-Control-Expose-Headers"] = "Content-Range"
+        return response
+
+app.add_middleware(ExposeHeadersMiddleware)
 
 # Configuración de CORS
 origins = [
