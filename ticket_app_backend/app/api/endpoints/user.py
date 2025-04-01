@@ -35,6 +35,7 @@ def read_user(user_id: int, db: Session = Depends(get_db), current_user: User = 
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
+@router.get("", response_model=List[UserRead])
 @router.get("/", response_model=List[UserRead])
 def read_users(
     request: Request,
